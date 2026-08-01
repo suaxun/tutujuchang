@@ -1,0 +1,9 @@
+{
+    "display_name": "小剧场生成器 (Mini Theater)",
+    "requires": [],
+    "optional": [],
+    "id": "mini-theater-generator",
+    "version": "1.0.0",
+    "author": "YourName",
+    "description": "在聊天界面添加一个悬浮窗，根据当前聊天上下文或自定义设定生成小剧场。支持使用酒馆默认API或自定义API。"
+}

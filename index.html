@@ -1,0 +1,37 @@
+<div id="mini-theater-popup" class="draggable">
+    <div id="mini-theater-header" class="drag-grabber">
+        <span>🎬 小剧场生成器</span>
+        <i id="mini-theater-close" class="fa-solid fa-xmark" style="cursor: pointer;"></i>
+    </div>
+    <div id="mini-theater-content">
+        <!-- 选项 -->
+        <label class="checkbox_label">
+            <input type="checkbox" id="mt-use-context" checked>
+            <span>包含最近的聊天上下文 (Context)</span>
+        </label>
+        
+        <label class="checkbox_label">
+            <input type="checkbox" id="mt-use-custom-api">
+            <span>使用自定义 OpenAI 格式 API (不勾选则使用酒馆当前API)</span>
+        </label>
+
+        <!-- 自定义 API 设置区 -->
+        <div id="mt-custom-api-settings" class="mt-api-settings">
+            <input type="text" id="mt-api-url" class="text_pole" placeholder="API URL (例如: https://api.openai.com/v1/chat/completions)">
+            <input type="password" id="mt-api-key" class="text_pole" placeholder="API Key">
+            <input type="text" id="mt-api-model" class="text_pole" placeholder="模型名称 (例如: gpt-3.5-turbo)">
+        </div>
+
+        <textarea id="mt-prompt-extra" class="text_pole" rows="3" placeholder="在这里输入附加提示词，例如：'生成一个搞笑的日常小剧场' 或 '以平行宇宙的视角写一段'"></textarea>
+
+        <div id="mt-generate-btn" class="mini-theater-btn">✨ 开始生成小剧场 ✨</div>
+        
+        <span>生成结果：</span>
+        <textarea id="mini-theater-result" readonly placeholder="小剧场将在这里显示..."></textarea>
+        
+        <div class="flex-container" style="gap: 10px;">
+            <div id="mt-copy-btn" class="mini-theater-btn flex1">复制结果</div>
+            <div id="mt-send-btn" class="mini-theater-btn flex1" title="将结果作为系统提示发送到聊天中">发送到聊天</div>
+        </div>
+    </div>
+</div>
