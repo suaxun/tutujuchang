@@ -1,7 +1,7 @@
 import { extension_settings } from "../../../extensions.js";
 import { generateQuietPrompt, chat, name1, name2 } from "../../../script.js";
 
-const extensionName = "mini-theater-generator";
+const extensionName = "tutujuchang";
 const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
 
 const defaultSettings = {
