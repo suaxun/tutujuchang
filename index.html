@@ -1,4 +1,22 @@
-<div id="mini-theater-popup" class="draggable">
+<!-- 这一部分会注入到右侧的“扩展 (Extensions)”面板中 -->
+<div id="mini-theater-extension-ui" class="inline-drawer flex-container flexFlowColumn" style="margin-bottom: 10px;">
+    <div class="inline-drawer-toggle inline-drawer-header">
+        <b>🎬 小剧场生成器</b>
+        <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+    </div>
+    <div class="inline-drawer-content" style="display: none;">
+        <div style="margin-bottom: 10px; font-size: 0.9em; opacity: 0.8;">
+            点击下方按钮打开独立悬浮窗，根据上下文生成小剧场。
+        </div>
+        <div id="mt-open-popup-btn" class="menu_button menu_button_icon">
+            <i class="fa-solid fa-external-link-alt"></i>
+            <span>打开小剧场面板</span>
+        </div>
+    </div>
+</div>
+
+<!-- 这一部分是悬浮窗，平时隐藏 -->
+<div id="mini-theater-popup" class="draggable" style="display: none;">
     <div id="mini-theater-header" class="drag-grabber">
         <span>🎬 小剧场生成器</span>
         <i id="mini-theater-close" class="fa-solid fa-xmark" style="cursor: pointer;"></i>
@@ -12,17 +30,17 @@
         
         <label class="checkbox_label">
             <input type="checkbox" id="mt-use-custom-api">
-            <span>使用自定义 OpenAI 格式 API (不勾选则使用酒馆当前API)</span>
+            <span>使用自定义 OpenAI 格式 API</span>
         </label>
 
         <!-- 自定义 API 设置区 -->
         <div id="mt-custom-api-settings" class="mt-api-settings">
             <input type="text" id="mt-api-url" class="text_pole" placeholder="API URL (例如: https://api.openai.com/v1/chat/completions)">
             <input type="password" id="mt-api-key" class="text_pole" placeholder="API Key">
-            <input type="text" id="mt-api-model" class="text_pole" placeholder="模型名称 (例如: gpt-3.5-turbo)">
+            <input type="text" id="mt-api-model" class="text_pole" placeholder="模型 (例如: gpt-3.5-turbo)">
         </div>
 
-        <textarea id="mt-prompt-extra" class="text_pole" rows="3" placeholder="在这里输入附加提示词，例如：'生成一个搞笑的日常小剧场' 或 '以平行宇宙的视角写一段'"></textarea>
+        <textarea id="mt-prompt-extra" class="text_pole" rows="3" placeholder="在这里输入附加提示词，例如：'生成一个搞笑的日常小剧场'"></textarea>
 
         <div id="mt-generate-btn" class="mini-theater-btn">✨ 开始生成小剧场 ✨</div>
         
@@ -31,7 +49,7 @@
         
         <div class="flex-container" style="gap: 10px;">
             <div id="mt-copy-btn" class="mini-theater-btn flex1">复制结果</div>
-            <div id="mt-send-btn" class="mini-theater-btn flex1" title="将结果作为系统提示发送到聊天中">发送到聊天</div>
+            <div id="mt-send-btn" class="mini-theater-btn flex1" title="将结果放入输入框">送入输入框</div>
         </div>
     </div>
 </div>
