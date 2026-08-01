@@ -1,21 +1,22 @@
 #mini-theater-popup {
-    position: absolute;
-    top: 20%;
-    left: 20%;
-    width: 400px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 450px;
     background-color: var(--SmartThemeBlurTintColor);
     border: 1px solid var(--SmartThemeBorderColor);
     border-radius: 10px;
     backdrop-filter: blur(var(--SmartThemeBlurStrength));
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     z-index: 9000;
     display: none;
     flex-direction: column;
 }
 
 #mini-theater-header {
-    background-color: rgba(0, 0, 0, 0.2);
-    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 12px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     cursor: grab;
@@ -23,48 +24,51 @@
     justify-content: space-between;
     align-items: center;
     font-weight: bold;
+    color: var(--SmartThemeBodyColor);
 }
 
 #mini-theater-content {
-    padding: 10px;
+    padding: 15px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    max-height: 500px;
+    gap: 12px;
+    max-height: 70vh;
     overflow-y: auto;
 }
 
 #mini-theater-result {
     width: 100%;
-    height: 150px;
+    height: 180px;
     resize: vertical;
     background-color: rgba(0, 0, 0, 0.3);
     color: var(--SmartThemeBodyColor);
     border: 1px solid var(--SmartThemeBorderColor);
     border-radius: 5px;
-    padding: 5px;
+    padding: 8px;
 }
 
 .mini-theater-btn {
     background-color: var(--SmartThemeBlurTintColor);
     border: 1px solid var(--SmartThemeBorderColor);
     color: var(--SmartThemeBodyColor);
-    padding: 8px;
+    padding: 10px;
     border-radius: 5px;
     cursor: pointer;
     text-align: center;
+    font-weight: bold;
     transition: 0.2s;
 }
 
 .mini-theater-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.15);
 }
 
 .mt-api-settings {
     display: none;
     flex-direction: column;
-    gap: 5px;
-    padding: 10px;
+    gap: 8px;
+    padding: 12px;
     background: rgba(0,0,0,0.2);
     border-radius: 5px;
+    border: 1px solid var(--SmartThemeBorderColor);
 }
