@@ -24,19 +24,39 @@ jQuery(async () => {
 
     // 1. 请求 HTML 文件
     const htmlData = await $.get(`${extensionFolderPath}/index.html`);
-    const $parsedHtml = $(htmlData);
     
-    // 2. 分离出两块 UI
-    const $extensionUI = $parsedHtml.filter('#mini-theater-extension-ui');
-    const $popupUI = $parsedHtml.filter('#mini-theater-popup');
+    // 【关键修复】使用一个临时 div 包裹 htmlData，然后用 find 查找，这样 100% 能找到元素
+    const $tempDiv = $('<div>').html(htmlData);
+    const $extensionUI = $tempDiv.find('#mini-theater-extension-ui');
+    const $popupUI = $tempDiv.find('#mini-theater-popup');
 
-    // 3. 注入 CSS 和 悬浮窗到 body
+    // 2. 注入 CSS 和 悬浮窗到 body
     $("head").append(`<link rel="stylesheet" href="${extensionFolderPath}/style.css">`);
     $("body").append($popupUI);
 
-    // 4. 将控制面板注入到酒馆的“扩展(Extensions)”列表中
-    // 根据你的源码，酒馆的扩展放于 #extensions_settings 和 #extensions_settings2
-    $('#extensions_settings').append($extensionUI);
+    // 3. 将控制面板注入到全局“扩展(Extensions)”列表中（积木图标面板）
+    // 为了防止样式冲突，包裹在 extension_container 中
+    const $wrapper = $('<div class="extension_container"></div>').append($extensionUI);
+    $('#extensions_settings').append($wrapper);
+
+    // ==========================================
+    // 4. 【新增功能】在聊天输入框左侧添加一个快捷呼出按钮
+    // ==========================================
+    const chatQuickBtn = `
+        <div id="mt-chat-quick-btn" class="fa-solid fa-clapperboard interactable" title="🎬 呼出小剧场生成器" tabindex="0" style="margin-left: 5px; opacity: 0.6; transition: opacity 0.2s;"></div>
+    `;
+    $('#leftSendForm').append(chatQuickBtn); // 追加在左侧菜单(汉堡按钮)旁边
+
+    // 为聊天框快捷按钮添加悬停高亮效果
+    $('#mt-chat-quick-btn').hover(
+        function() { $(this).css('opacity', '1'); },
+        function() { $(this).css('opacity', '0.6'); }
+    );
+
+    // 点击聊天框快捷按钮，打开悬浮窗
+    $('#mt-chat-quick-btn').on('click', () => {
+        $('#mini-theater-popup').fadeIn(200);
+    });
 
     // ==========================================
     // 绑定基础事件
@@ -52,7 +72,7 @@ jQuery(async () => {
     // 绑定拖拽
     $('#mini-theater-popup').draggable({ handle: '#mini-theater-header' });
 
-    // 点击扩展面板里的按钮，打开悬浮窗
+    // 点击全局扩展面板里的按钮，打开悬浮窗
     $('#mt-open-popup-btn').on('click', () => {
         $('#mini-theater-popup').fadeIn(200);
     });
@@ -70,7 +90,10 @@ jQuery(async () => {
     $('#mt-api-key').val(settings.apiKey);
     $('#mt-api-model').val(settings.apiModel);
     $('#mt-prompt-extra').val(settings.promptExtra);
-    if (settings.useCustomApi) $('#mt-custom-api-settings').css('display', 'flex');
+    
+    if (settings.useCustomApi) {
+        $('#mt-custom-api-settings').css('display', 'flex');
+    }
 
     // 自定义API开关
     $('#mt-use-custom-api').on('change', function () {
