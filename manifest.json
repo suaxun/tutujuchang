@@ -1,9 +1,9 @@
 {
-    "display_name": "小剧场生成器 (Mini Theater)",
-    "id": "mini-theater-generator",
+    "display_name": "兔兔小剧场",
+    "id": "tutujuchang",
     "version": "1.1.0",
     "author": "YourName",
-    "description": "在扩展面板中添加小剧场生成器。可以提取上下文，使用默认或自定义 API 生成独立的小剧场剧情。",
+    "description": "在扩展面板中添加小剧场生成器。",
     "requires": [],
     "optional": []
 }
