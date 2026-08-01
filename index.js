@@ -10,10 +10,8 @@ const defaultSettings = {
     apiUrl: "",
     apiKey: "",
     apiModel: "",
-    promptExtra: "请根据以上上下文，生成一段有趣的平行宇宙小剧场："
+    promptExtra: "请根据以上的聊天上下文，生成一段有趣的平行宇宙小剧场："
 };
-
-let currentTargetMesId = -1; // 记录是从哪条消息触发的
 
 async function loadSettings() {
     if (!extension_settings[extensionName]) {
@@ -24,15 +22,47 @@ async function loadSettings() {
 jQuery(async () => {
     await loadSettings();
 
-    // 1. 加载悬浮窗 HTML 和 CSS
-    const html = await $.get(`${extensionFolderPath}/index.html`);
-    $("body").append(html);
-    $("head").append(`<link rel="stylesheet" href="${extensionFolderPath}/style.css">`);
+    // 1. 请求 HTML 文件
+    const htmlData = await $.get(`${extensionFolderPath}/index.html`);
+    const $parsedHtml = $(htmlData);
+    
+    // 2. 分离出两块 UI
+    const $extensionUI = $parsedHtml.filter('#mini-theater-extension-ui');
+    const $popupUI = $parsedHtml.filter('#mini-theater-popup');
 
-    // 绑定悬浮窗拖拽
+    // 3. 注入 CSS 和 悬浮窗到 body
+    $("head").append(`<link rel="stylesheet" href="${extensionFolderPath}/style.css">`);
+    $("body").append($popupUI);
+
+    // 4. 将控制面板注入到酒馆的“扩展(Extensions)”列表中
+    // 根据你的源码，酒馆的扩展放于 #extensions_settings 和 #extensions_settings2
+    $('#extensions_settings').append($extensionUI);
+
+    // ==========================================
+    // 绑定基础事件
+    // ==========================================
+
+    // 绑定扩展面板的手风琴折叠展开效果 (兼容酒馆的原生效果)
+    $extensionUI.find('.inline-drawer-toggle').on('click', function () {
+        const icon = $(this).find('.inline-drawer-icon');
+        icon.toggleClass('down up');
+        $(this).next('.inline-drawer-content').slideToggle(200);
+    });
+
+    // 绑定拖拽
     $('#mini-theater-popup').draggable({ handle: '#mini-theater-header' });
 
-    // 初始化 UI
+    // 点击扩展面板里的按钮，打开悬浮窗
+    $('#mt-open-popup-btn').on('click', () => {
+        $('#mini-theater-popup').fadeIn(200);
+    });
+
+    // 悬浮窗关闭按钮
+    $('#mini-theater-close').on('click', () => {
+        $('#mini-theater-popup').fadeOut(200);
+    });
+
+    // 初始化数据填充
     const settings = extension_settings[extensionName];
     $('#mt-use-context').prop('checked', settings.useContext);
     $('#mt-use-custom-api').prop('checked', settings.useCustomApi);
@@ -42,49 +72,7 @@ jQuery(async () => {
     $('#mt-prompt-extra').val(settings.promptExtra);
     if (settings.useCustomApi) $('#mt-custom-api-settings').css('display', 'flex');
 
-    // ==========================================
-    // 核心 UI 注入逻辑：放到右下角和消息菜单里
-    // ==========================================
-
-    // 注入 A: 聊天框右下角 (发送按钮旁边)
-    // 这里兼容了可能存在的 extensionsMenuButton 或者默认的 rightSendForm
-    const chatBarBtn = `<div id="mt_chat_bar_btn" class="fa-solid fa-clapperboard interactable" title="小剧场生成器" style="margin: 0 8px; font-size: 0.9em;"></div>`;
-    if ($('#extensionsMenuButton').length) {
-        $('#extensionsMenuButton').before(chatBarBtn);
-    } else {
-        $('#rightSendForm').prepend(chatBarBtn); // 放到发送按钮组的最前面
-    }
-
-    // 注入 B: 每条消息的扩展菜单 (和"生成图片"放在一起)
-    const msgTheaterBtn = `<div title="以此为节点生成小剧场" class="mes_button mt_message_gen fa-solid fa-clapperboard"></div>`;
-    // 1. 注入到 HTML 模板中，这样以后新发的消息自动带有这个按钮
-    $('#message_template .extraMesButtons').append(msgTheaterBtn);
-    // 2. 注入到当前页面已经存在的老消息中
-    $('.extraMesButtons').not(':has(.mt_message_gen)').append(msgTheaterBtn);
-
-    // ==========================================
-    // 绑定点击事件
-    // ==========================================
-
-    // 点击右下角按钮：获取全局最新上下文
-    $('#mt_chat_bar_btn').on('click', () => {
-        currentTargetMesId = chat.length - 1; 
-        $('#mini-theater-popup').fadeToggle(200);
-    });
-
-    // 点击某条消息的按钮：获取到该消息为止的上下文
-    $(document).on('click', '.mt_message_gen', function() {
-        // 获取这条消息的 ID
-        currentTargetMesId = parseInt($(this).closest('.mes').attr('mesid'));
-        $('#mini-theater-popup').fadeIn(200);
-    });
-
-    // 关闭悬浮窗
-    $('#mini-theater-close').on('click', () => {
-        $('#mini-theater-popup').fadeOut(200);
-    });
-
-    // 切换 API 选项
+    // 自定义API开关
     $('#mt-use-custom-api').on('change', function () {
         if ($(this).is(':checked')) {
             $('#mt-custom-api-settings').slideDown(200);
@@ -94,7 +82,7 @@ jQuery(async () => {
     });
 
     // ==========================================
-    // 生成逻辑
+    // 核心：生成逻辑
     // ==========================================
     $('#mt-generate-btn').on('click', async () => {
         const btn = $('#mt-generate-btn');
@@ -102,7 +90,7 @@ jQuery(async () => {
         btn.css('pointer-events', 'none');
         $('#mini-theater-result').val('生成中...');
 
-        // 保存设置
+        // 存设置
         extension_settings[extensionName] = {
             useContext: $('#mt-use-context').is(':checked'),
             useCustomApi: $('#mt-use-custom-api').is(':checked'),
@@ -114,15 +102,14 @@ jQuery(async () => {
 
         const currentSet = extension_settings[extensionName];
 
-        // 提取聊天记录 (最多向前提取 15 条，防止超 Token)
+        // 提取聊天记录 (提取最后15条)
         let finalPrompt = "";
         if (currentSet.useContext) {
             let contextLog = "";
             const historyCount = 15;
-            const startIndex = Math.max(0, currentTargetMesId - historyCount + 1);
-            const endIndex = currentTargetMesId >= 0 ? currentTargetMesId : (chat.length - 1);
+            const startIndex = Math.max(0, chat.length - historyCount);
             
-            for (let i = startIndex; i <= endIndex; i++) {
+            for (let i = startIndex; i < chat.length; i++) {
                 if (chat[i] && !chat[i].is_system) {
                     let speaker = chat[i].is_user ? name1 : chat[i].name;
                     contextLog += `${speaker}: ${chat[i].mes}\n`;
@@ -154,7 +141,6 @@ jQuery(async () => {
                 const data = await response.json();
                 resultText = data.choices[0].message.content;
             } else {
-                // 调用酒馆的静默生成 API
                 resultText = await generateQuietPrompt(finalPrompt);
             }
 
@@ -169,7 +155,7 @@ jQuery(async () => {
         }
     });
 
-    // 复制和发送到输入框
+    // 复制和发送
     $('#mt-copy-btn').on('click', async () => {
         const text = $('#mini-theater-result').val();
         if(text) {
